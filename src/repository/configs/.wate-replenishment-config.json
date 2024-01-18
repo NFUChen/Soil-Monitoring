@@ -1,0 +1,11 @@
+{
+    "mode": "auto",
+    "replenishment_times": [
+        {
+            "time": "08:00:00", "duration": 3
+        },
+        {
+            "time": "09:00:00", "duration": 5
+        }
+    ]
+}

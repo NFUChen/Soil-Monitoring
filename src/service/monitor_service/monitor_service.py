@@ -1,0 +1,85 @@
+
+
+import time
+from datetime import datetime
+from threading import Thread
+
+from messaging.message_broker import MessageBroker
+from repository.alert_config_repository import AlertConfigRepository
+from repository.environment_variable_repository import (
+    EnvironmentVariable, EnvironmentVariableRepository)
+from repository.water_replenishment_config_repository import \
+    WaterReplenishmentConfigRepository
+from service.enums import MessageTopic
+
+
+class MonitorService:
+    ONE_DAY_SECONDS =  3600 * 24
+    def __init__(self, 
+                 environment_variable_repo: EnvironmentVariableRepository, 
+                 alert_config_repo: AlertConfigRepository, 
+                 water_replenishment_config_repo: WaterReplenishmentConfigRepository,
+                 message_broker: MessageBroker) -> None:
+        self.message_broker = message_broker
+        self.alert_config_repo = alert_config_repo
+        self.environment_variable_repo = environment_variable_repo
+        self.water_replenishment_config_repo = water_replenishment_config_repo
+
+
+        self._start_monitor_thread()
+
+    
+
+    def _handle_replenishment(self, second_in_day: int) -> None:
+        is_reset_time = second_in_day > self.ONE_DAY_SECONDS - 5
+
+        for replenishment in self.water_replenishment_config_repo.config.replenishment_times:
+
+            if is_reset_time:
+                if not replenishment.is_done:
+                    continue
+                replenishment.is_done = False
+
+            if replenishment.is_done or is_reset_time:
+                continue
+
+
+            if second_in_day < replenishment.timestamp:
+                continue
+            
+            self.message_broker.publish(MessageTopic.REPLENISHMENT.value, replenishment)
+            replenishment.is_done = True
+
+
+
+    def get_environment_variable(self) -> EnvironmentVariable:
+        return self.environment_variable_repo.get_environment_variable()
+    
+    def _start_monitor_thread(self) -> None:
+        def wrapper() -> None:
+            
+            while (True):
+                current_epoch_seconds = int(time.time())
+                second_in_day = self._get_second_in_day(current_epoch_seconds)
+
+                alert_config = self.alert_config_repo.get_config()
+                env_var = self.environment_variable_repo.get_environment_variable()
+                
+                if not (alert_config.humimdity_threshold.lower_bound < env_var.humidity < alert_config.humimdity_threshold.upper_bound):
+                    self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, f"Humidity: {env_var.humidity} out of bound [{alert_config.humimdity_threshold.lower_bound}, {alert_config.humimdity_threshold.upper_bound}]")
+                
+                if not (alert_config.temperature_threshold.lower_bound < env_var.temperature < alert_config.temperature_threshold.upper_bound):
+                    self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, f"Temperature: {env_var.temperature} out of bound [{alert_config.temperature_threshold.lower_bound}, {alert_config.temperature_threshold.upper_bound}]")
+
+                
+                self.message_broker.publish(MessageTopic.SENSOR.value, env_var)
+
+                self._handle_replenishment(second_in_day)
+
+                time.sleep(1)
+
+                
+        Thread(target = wrapper, daemon= True).start()
+    
+    def _get_second_in_day(self, current_epoch_seconds: int) -> int:
+        return current_epoch_seconds % self.ONE_DAY_SECONDS
