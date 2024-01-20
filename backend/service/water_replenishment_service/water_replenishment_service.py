@@ -4,7 +4,8 @@ from loguru import logger
 
 from messaging.message_broker import MessageBroker
 from repository import WaterReplenishment, WaterReplenishmentConfigRepository
-from repository.water_replenishment_config_repository import WaterReplenishmentConfig
+from repository.water_replenishment_config_repository import \
+    WaterReplenishmentConfig
 from service.enums import DeviceCommand, MessageTopic
 from service.hardware_device_service.output_pin import OutputPin
 

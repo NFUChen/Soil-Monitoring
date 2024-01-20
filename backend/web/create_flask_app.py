@@ -1,10 +1,17 @@
+from typing import Any
+
+from flask import request
 from flask.views import MethodView
+
 from messaging.message_broker import MessageBroker
-from repository.alert_config_repository import AlertConfigRepository
-from repository.water_replenishment_config_repository import WaterReplenishmentConfigRepository
-from service.water_replenishment_service.water_replenishment_service import WaterReplenishmentService
-from web.server import Server
+from repository.alert_config_repository import (AlertConfig,
+                                                AlertConfigRepository)
+from repository.water_replenishment_config_repository import (
+    WaterReplenishmentConfig, WaterReplenishmentConfigRepository)
+from service.water_replenishment_service.water_replenishment_service import \
+    WaterReplenishmentService
 from web.flask_server import FlaskServer
+from web.server import Server
 
 
 def create_app(
@@ -33,8 +40,17 @@ def create_app(
     def get_alert_config():
         return alert_config_repo.config.serialize()
     
+    @server.app.route("/api/config/water_replenishment", methods= ["POST"])
+    def save_water_replenishment_config() -> dict[str, Any]:
+        replenishment_dict:dict[str, Any] = request.get_json() # type: ignore
+        return water_replenishment_config_repo.save_config(WaterReplenishmentConfig(**replenishment_dict))
     
     
+    @server.app.route("/api/config/alert", methods= ["POST"])
+    def save_water_alert_config() -> dict[str, Any]:
+        alert_config_dict:dict[str, Any] = request.get_json() # type: ignore
+        return alert_config_repo.save_config(AlertConfig(**alert_config_dict))
+        
     
     return server
     

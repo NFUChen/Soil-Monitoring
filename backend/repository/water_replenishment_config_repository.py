@@ -71,10 +71,12 @@ class WaterReplenishmentConfigRepository:
             return config
         
     
-    def save_config(self, config:WaterReplenishmentConfig) -> None:
+    def save_config(self, config:WaterReplenishmentConfig) -> dict[str, Any]:
         with open(self._config_file_name, "w") as file:
-            config_json = json.dumps(config.serialize())
+            py_dict = config.serialize()
+            config_json = json.dumps(py_dict, indent= 4)
             file.write(config_json)
+        return py_dict
                 
 
     def get_config(self) -> WaterReplenishmentConfig:

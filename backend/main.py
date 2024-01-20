@@ -1,5 +1,5 @@
-from crypt import methods
 import sys
+from crypt import methods
 
 from loguru import logger
 

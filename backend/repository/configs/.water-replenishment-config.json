@@ -1,0 +1,28 @@
+{
+    "replenishment_times": [
+        {
+            "timestamp": 38640,
+            "duration": 3,
+            "target": null,
+            "is_done": false
+        },
+        {
+            "timestamp": 38700,
+            "duration": 5,
+            "target": null,
+            "is_done": false
+        },
+        {
+            "timestamp": 38760,
+            "duration": 10,
+            "target": null,
+            "is_done": false
+        },
+        {
+            "timestamp": 38820,
+            "duration": 10,
+            "target": null,
+            "is_done": false
+        }
+    ]
+}

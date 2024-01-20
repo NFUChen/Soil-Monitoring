@@ -5,8 +5,6 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from loguru import logger
-
 from .serializable import Serializable
 
 
@@ -44,10 +42,13 @@ class AlertConfigRepository:
             py_dict = json.loads(file.read())
             return AlertConfig(**py_dict) # type: ignore
         
-    def save_config(self, config: AlertConfig) -> None:
-        with open(self._config_file_name) as file:
-            config_json = json.dumps(config.serialize())
+    def save_config(self, config: AlertConfig) -> dict[str, Any]:
+        with open(self._config_file_name, "w") as file:
+            py_dict = config.serialize()
+            config_json = json.dumps(py_dict, indent= False)
             file.write(config_json)
+            
+        return py_dict
 
     def get_config(self) -> AlertConfig:
         return self.config

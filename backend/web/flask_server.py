@@ -8,11 +8,8 @@ from flask_cors import CORS
 from flask_socketio import SocketIO
 
 from messaging.message_broker import IMeessageListener, MessageBroker
-from repository.alert_config_repository import AlertConfigRepository
 from repository.environment_variable_repository import EnvironmentVariable
-from repository.water_replenishment_config_repository import WaterReplenishmentConfigRepository
 from service.enums import MessageTopic
-from service.water_replenishment_service.water_replenishment_service import WaterReplenishmentService
 from web.server import Server
 
 
