@@ -1,8 +1,10 @@
 import time
+
 from loguru import logger
 
 from messaging.message_broker import MessageBroker
 from repository import WaterReplenishment, WaterReplenishmentConfigRepository
+from repository.water_replenishment_config_repository import WaterReplenishmentConfig
 from service.enums import DeviceCommand, MessageTopic
 from service.hardware_device_service.output_pin import OutputPin
 
@@ -20,7 +22,8 @@ class WaterReplenishmentService:
         
         self._subcribe()
         self._reset_device()
-
+        
+    
     def _reset_device(self) -> None:
         logger.warning("[INIT RESET] Turn off replenishment device")
         self.replenishment_output_device.force_turn_off()
@@ -53,3 +56,8 @@ class WaterReplenishmentService:
     def _subcribe(self) -> None:
         self.message_broker.subscribe(MessageTopic.REPLENISHMENT.value, self._handle_auto)
         self.message_broker.subscribe(MessageTopic.MANUAL_REPLENISHMENT.value, self._handle_manual)
+        
+    
+    def get_config(self) -> WaterReplenishmentConfig:
+        return self.water_replenishment_config_repository.get_config()
+

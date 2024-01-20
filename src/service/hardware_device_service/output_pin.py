@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 from loguru import logger
 
+
 class OutputPin:
     def __init__(self, output_pin_number: int) -> None:
         self.output_pin_number = output_pin_number

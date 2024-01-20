@@ -1,39 +1,56 @@
 
+from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
+from loguru import logger
+
+from .serializable import Serializable
+
 
 @dataclass
-class Threshold:
+class Threshold(Serializable):
     upper_bound: float
     lower_bound: float
 
-    def to_dict(self) -> dict[str, float]:
-        return self.__dict__
-    
+
 
 
 @dataclass
-class AlertConfig:
+class AlertConfig(Serializable):
     temperature_threshold: Threshold
-    humimdity_threshold: Threshold
+    humidity_threshold: Threshold
 
-    def to_dict(self) -> dict[str, dict[str, float]]:
-        return {
-            "temperature_threshold": self.temperature_threshold.to_dict(),
-            "humimdity_threshold": self.humimdity_threshold.to_dict()
-        }
+    def __post_init__(self) -> None:
+        if isinstance(self.temperature_threshold, dict):
+            self.temperature_threshold = Threshold(**self.temperature_threshold)
+            
+        if isinstance(self.humidity_threshold, dict):
+            self.humidity_threshold = Threshold(**self.humidity_threshold)
+        
+
 
 class AlertConfigRepository:
     def __init__(self) -> None:
-        pass
+
+        self._config_file_name = "/home/pi/soil_temp/src/repository/configs/.alert-config.json"
+        self.config = self._read_config()
+
+
+    def _read_config(self) -> AlertConfig:
+        with open(self._config_file_name) as file:
+            py_dict = json.loads(file.read())
+            return AlertConfig(**py_dict) # type: ignore
+        
+    def save_config(self, config: AlertConfig) -> None:
+        with open(self._config_file_name) as file:
+            config_json = json.dumps(config.serialize())
+            file.write(config_json)
 
     def get_config(self) -> AlertConfig:
-        return AlertConfig(
-            Threshold(24.3, 21.3),
-            Threshold(44.3, 40.3)
-        )
+        return self.config
     
 if __name__ == "__main__":
     # Example data
@@ -42,10 +59,11 @@ if __name__ == "__main__":
 
     alert_config = AlertConfig(
         temperature_threshold=temperature_threshold,
-        humimdity_threshold=humidity_threshold
+        humidity_threshold=humidity_threshold
     )
-
-    # Convert to dictionary
-    example_data = alert_config.to_dict()
-
-    print(example_data)
+    json_data = {'temperature_threshold': {'upper_bound': 30.0, 'lower_bound': 10.0}, 'humidity_threshold': {'upper_bound': 80.0, 'lower_bound': 20.0}}
+    print(AlertConfig(**json_data)) # type: ignore
+    print(alert_config.__dict__)
+    
+    print(temperature_threshold.serialize())
+    print(alert_config.serialize())

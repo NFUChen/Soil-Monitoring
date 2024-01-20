@@ -1,7 +1,6 @@
 
 
 import time
-from datetime import datetime
 from threading import Thread
 
 from messaging.message_broker import MessageBroker
@@ -33,7 +32,7 @@ class MonitorService:
     def _handle_replenishment(self, second_in_day: int) -> None:
         is_reset_time = second_in_day > self.ONE_DAY_SECONDS - 5
 
-        for replenishment in self.water_replenishment_config_repo.config.replenishment_times:
+        for replenishment in self.water_replenishment_config_repo.get_config().replenishment_times:
 
             if is_reset_time:
                 if not replenishment.is_done:
@@ -60,13 +59,13 @@ class MonitorService:
             
             while (True):
                 current_epoch_seconds = int(time.time())
-                second_in_day = self._get_second_in_day(current_epoch_seconds)
+                second_in_day = self._get_second_in_day_from_epoch(current_epoch_seconds)
 
                 alert_config = self.alert_config_repo.get_config()
                 env_var = self.environment_variable_repo.get_environment_variable()
                 
-                if not (alert_config.humimdity_threshold.lower_bound < env_var.humidity < alert_config.humimdity_threshold.upper_bound):
-                    self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, f"Humidity: {env_var.humidity} out of bound [{alert_config.humimdity_threshold.lower_bound}, {alert_config.humimdity_threshold.upper_bound}]")
+                if not (alert_config.humidity_threshold.lower_bound < env_var.humidity < alert_config.humidity_threshold.upper_bound):
+                    self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, f"Humidity: {env_var.humidity} out of bound [{alert_config.humidity_threshold.lower_bound}, {alert_config.humidity_threshold.upper_bound}]")
                 
                 if not (alert_config.temperature_threshold.lower_bound < env_var.temperature < alert_config.temperature_threshold.upper_bound):
                     self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, f"Temperature: {env_var.temperature} out of bound [{alert_config.temperature_threshold.lower_bound}, {alert_config.temperature_threshold.upper_bound}]")
@@ -81,5 +80,5 @@ class MonitorService:
                 
         Thread(target = wrapper, daemon= True).start()
     
-    def _get_second_in_day(self, current_epoch_seconds: int) -> int:
+    def _get_second_in_day_from_epoch(self, current_epoch_seconds: int) -> int:
         return current_epoch_seconds % self.ONE_DAY_SECONDS

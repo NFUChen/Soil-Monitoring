@@ -2,7 +2,7 @@
     "temperature_threshold": {
         "upper_bound": 24.3, "lower_bound": 21.3
     },
-    "humimdity_threshold": {
+    "humidity_threshold": {
         "upper_bound": 44.3, "lower_bound": 40.3
     }
 }
