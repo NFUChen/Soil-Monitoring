@@ -1,6 +1,8 @@
+import json
 import time
 from dataclasses import dataclass
 from threading import Thread
+from typing import Any
 
 from flask import Flask
 from flask.views import MethodView
@@ -16,13 +18,13 @@ from web.server import Server
 @dataclass
 class SocketMessage:
     topic: str
-    content: str
+    content: dict[str, Any]
 
 class FlaskServer(Server[MethodView]):
     ALL_HOSTS = "0.0.0.0"
     def __init__(self, message_broker: MessageBroker) -> None:
         self.app = Flask(__name__)
-        self.socketio = SocketIO(self.app)
+        self.socketio = SocketIO(self.app, cors_allowed_origins="*")
         CORS(self.app)
 
         self.message_broker = message_broker
@@ -42,21 +44,21 @@ class FlaskServer(Server[MethodView]):
             self.message_broker.subscribe(topic, handler)
         
     def emit(self, topic: str, message: str) -> bool:
-        self.socketio.emit(topic, message)
+        self.socketio.emit(topic, json.loads(message))
 
         return True
 
     def run(self) -> None:
-        self.socketio.run(self.app, host= self.ALL_HOSTS, debug= False) # type: ignore
+        self.socketio.run(self.app, host= self.ALL_HOSTS, debug= False, allow_unsafe_werkzeug=True) # type: ignore
 
-    def _handle_alert_humidity(self, topic, alert_message: str) -> None:
-        self.message_queue.append(SocketMessage(topic, alert_message))
+    def _handle_alert_humidity(self, topic: str, alert_message: str) -> None:
+        self.message_queue.append(SocketMessage(topic, {"message": alert_message}))
 
-    def _handle_alert_temperature(self, topic, alert_message: str) -> None:
-        self.message_queue.append(SocketMessage(topic, alert_message))
+    def _handle_alert_temperature(self, topic: str, alert_message: str) -> None:
+        self.message_queue.append(SocketMessage(topic, {"message": alert_message}))
 
     def _handle_sensor_emit(self, topic: str, env_var: EnvironmentVariable) -> None:
-        self.message_queue.append(SocketMessage(topic, str(env_var.to_dict())))
+        self.message_queue.append(SocketMessage(topic, env_var.to_dict()))
 
     def register_routes(self, request_mapping: str, method_view: MethodView) -> None:
         self.app.add_url_rule(request_mapping, view_func= method_view.as_view(request_mapping))

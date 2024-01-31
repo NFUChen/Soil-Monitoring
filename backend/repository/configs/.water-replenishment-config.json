@@ -1,25 +1,37 @@
 {
     "replenishment_times": [
         {
-            "timestamp": 38640,
+            "timestamp": "01:30:00",
             "duration": 3,
             "target": null,
             "is_done": false
         },
         {
-            "timestamp": 38700,
+            "timestamp": "01:31:00",
             "duration": 5,
             "target": null,
             "is_done": false
         },
         {
-            "timestamp": 38760,
+            "timestamp": "01:32:00",
             "duration": 10,
             "target": null,
             "is_done": false
         },
         {
-            "timestamp": 38820,
+            "timestamp": "01:33:00",
+            "duration": 10,
+            "target": null,
+            "is_done": false
+        },
+        {
+            "timestamp": "01:34:00",
+            "duration": 10,
+            "target": null,
+            "is_done": false
+        },
+        {
+            "timestamp": "01:35:00",
             "duration": 10,
             "target": null,
             "is_done": false

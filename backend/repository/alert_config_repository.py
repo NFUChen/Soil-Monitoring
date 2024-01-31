@@ -33,7 +33,7 @@ class AlertConfig(Serializable):
 class AlertConfigRepository:
     def __init__(self) -> None:
 
-        self._config_file_name = "/home/pi/soil_temp/src/repository/configs/.alert-config.json"
+        self._config_file_name = "/app/repository/configs/.alert-config.json"
         self.config = self._read_config()
 
 

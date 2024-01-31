@@ -54,7 +54,7 @@ class WaterReplenishmentConfigRepository:
     
     def __init__(self) -> None:
 
-        self._config_file_name = "/home/pi/soil_temp/src/repository/configs/.water-replenishment-config.json"
+        self._config_file_name = "/app/repository/configs/.water-replenishment-config.json"
         self.config = self._read_config()
         
 

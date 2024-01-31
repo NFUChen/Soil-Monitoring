@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+  server:
+    restart: always
+    container_name: "template-server"
+    build:
+      context: ./backend
+      dockerfile: dockerfile
+    ports:
+      - "5000:5000"
+    privileged: true
