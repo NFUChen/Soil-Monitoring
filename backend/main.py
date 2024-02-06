@@ -8,7 +8,8 @@ from repository import (
     AlertConfigRepository, 
     EnvironmentVariableRepository, 
     WaterReplenishmentConfigRepository,
-    InMemoryEnvironmentVariableRepository
+    InMemoryEnvironmentVariableRepository,
+    init_database
 )
 from service import MonitorService, OutputPin, WaterReplenishmentService
 from web.create_flask_app import create_app
@@ -17,14 +18,14 @@ logger.add(sys.stderr, level= "INFO")
 
 
 message_broker = MessageBroker()
+sql_engine = init_database()
+env_repo: EnvironmentVariableRepository = InMemoryEnvironmentVariableRepository(sql_engine)
 
-env_repo: EnvironmentVariableRepository = InMemoryEnvironmentVariableRepository()
-
-if os.environ["MODE"] == "PROD":
+if os.environ.get("MODE", None) == "PROD":
     logger.info("[PROD MODE DETECTED] Current mode is production mode, use AHT20 powered environment repository.")
     from repository import AHT20, Aht20EnvironmentVariableRepository
     aht20 = AHT20()
-    env_repo = Aht20EnvironmentVariableRepository(aht20)
+    env_repo = Aht20EnvironmentVariableRepository(aht20, sql_engine)
 
     
 
@@ -37,9 +38,13 @@ monitor_service = MonitorService(env_repo, alert_config_repo, water_replenishmen
 output_pin = OutputPin(17)
 water_replenishment_service = WaterReplenishmentService(message_broker,water_replenishment_config_repo, output_pin)
 
+
+
+
 server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo)
 
 
 
 if __name__ == "__main__":
+    
     server.run()

@@ -10,3 +10,4 @@ from .water_replenishment_config_repository import (
 
 
 from .externals import AHT20
+from .models import init_database

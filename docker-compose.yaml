@@ -1,13 +1,26 @@
 version: '3.3'
 services:
-  server:
+  sensor-monitor-server:
     restart: always
-    container_name: "template-server"
+    container_name: "sensor-monitor-server"
     build:
       context: ./backend
       dockerfile: dockerfile
     ports:
       - "5000:5000"
-    environment:
-      - MODE=PROD # PROD or not specified
+    # environment:
+      # - MODE=PROD # PROD or not specified, not specified will be in dev mode
     privileged: true
+
+  sensor-db:
+    restart: always
+    image: postgres:latest
+    container_name: sensor-db
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: sram-admin 
+      POSTGRES_PASSWORD: sramsram-admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data

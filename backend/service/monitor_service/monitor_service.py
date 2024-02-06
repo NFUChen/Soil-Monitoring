@@ -72,6 +72,11 @@ class MonitorService:
 
                 
                 self.message_broker.publish(MessageTopic.SENSOR.value, env_var)
+                
+
+                if (current_epoch_seconds % 10) == 0:
+                    self.environment_variable_repo.save_environment_varible(env_var)
+
 
                 self._handle_replenishment(second_in_day)
 
