@@ -1,20 +1,34 @@
+import os
 import sys
 
 from loguru import logger
 
 from messaging.message_broker import MessageBroker
-from repository import (AlertConfigRepository, EnvironmentVariableRepository,
-                        WaterReplenishmentConfigRepository)
+from repository import (
+    AlertConfigRepository, 
+    EnvironmentVariableRepository, 
+    WaterReplenishmentConfigRepository,
+    InMemoryEnvironmentVariableRepository
+)
 from service import MonitorService, OutputPin, WaterReplenishmentService
 from web.create_flask_app import create_app
-
 logger.remove()
 logger.add(sys.stderr, level= "INFO")
 
 
 message_broker = MessageBroker()
 
-env_repo = EnvironmentVariableRepository()
+env_repo: EnvironmentVariableRepository = InMemoryEnvironmentVariableRepository()
+
+if os.environ["MODE"] == "PROD":
+    logger.info("[PROD MODE DETECTED] Current mode is production mode, use AHT20 powered environment repository.")
+    from repository import AHT20, Aht20EnvironmentVariableRepository
+    aht20 = AHT20()
+    env_repo = Aht20EnvironmentVariableRepository(aht20)
+
+    
+
+
 alert_config_repo = AlertConfigRepository()
 water_replenishment_config_repo = WaterReplenishmentConfigRepository()
 
