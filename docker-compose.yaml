@@ -7,7 +7,7 @@ services:
       context: ./backend
       dockerfile: dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5000"
     # environment:
       # - MODE=PROD # PROD or not specified, not specified will be in dev mode
     privileged: true

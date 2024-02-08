@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  word-replacer-frontend:
+    restart: always
+    # image: richli0623/word-replacer-frontend
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      - PUBLIC_BASE_URL=http://localhost:8080
+    ports:
+      - "3000:3000"
