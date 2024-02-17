@@ -52,7 +52,9 @@ class GmailNotificationService(BaseNotificationService):
     def push_notification(self, topic: str,message: str) -> bool:
         current_epoch_second = time.time()
         if not self._can_publish(topic,current_epoch_second):
-            logger.warning(f"[GMAIL RATE LIMIT] Current time for topic {topic} is unavailable, please wait for {int(self.get_next_publishable_epoch_second_topic(topic) - current_epoch_second)} seconds")
+            waiting_seconds = int(self.get_next_publishable_epoch_second_topic(topic) - current_epoch_second)
+            if waiting_seconds % 100 == 0:
+                logger.warning(f"[GMAIL RATE LIMIT] Current time for topic {topic} is unavailable, please wait for {waiting_seconds} seconds")
             return False
 
         for receiver in self.email_receiver_repository.find_all():
