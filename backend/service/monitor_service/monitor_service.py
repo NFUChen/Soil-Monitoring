@@ -65,17 +65,23 @@ class MonitorService:
                 env_var = self.environment_variable_repo.get_environment_variable()
                 
                 if not (alert_config.humidity_threshold.lower_bound < env_var.humidity < alert_config.humidity_threshold.upper_bound):
-                    self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, f"Humidity: {env_var.humidity} out of bound [{alert_config.humidity_threshold.lower_bound}, {alert_config.humidity_threshold.upper_bound}]")
+                    humidity_alert_message = f"Humidity: {env_var.humidity} out of bound [{alert_config.humidity_threshold.lower_bound}, {alert_config.humidity_threshold.upper_bound}]"
+
+                    self.message_broker.publish(MessageTopic.ALERT.value, humidity_alert_message)
+                    self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, humidity_alert_message)
                 
                 if not (alert_config.temperature_threshold.lower_bound < env_var.temperature < alert_config.temperature_threshold.upper_bound):
-                    self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, f"Temperature: {env_var.temperature} out of bound [{alert_config.temperature_threshold.lower_bound}, {alert_config.temperature_threshold.upper_bound}]")
+                    temperature_alert_message = f"Temperature: {env_var.temperature} out of bound [{alert_config.temperature_threshold.lower_bound}, {alert_config.temperature_threshold.upper_bound}]"
+                    
+                    self.message_broker.publish(MessageTopic.ALERT.value, temperature_alert_message)
+                    self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, temperature_alert_message)
 
                 
                 self.message_broker.publish(MessageTopic.SENSOR.value, env_var)
                 
 
                 if (current_epoch_seconds % 10) == 0:
-                    self.environment_variable_repo.save_environment_varible(env_var)
+                    self.environment_variable_repo.save(env_var)
 
 
                 self._handle_replenishment(second_in_day)

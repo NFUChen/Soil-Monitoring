@@ -1,6 +1,9 @@
-from smbus2 import SMBus
 import time
+
+from smbus2 import SMBus
+
 from .crc8_helper import AHT20_crc8_check
+
 
 def get_normalized_bit(value, bit_index):
     # Return only one bit from value indicated in bit_index

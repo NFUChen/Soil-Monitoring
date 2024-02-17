@@ -1,18 +1,16 @@
 
-from abc import ABC, abstractmethod
 import random
-from threading import Thread
 import time
-from loguru import logger
+from abc import ABC, abstractmethod
+from threading import Thread
 
+from loguru import logger
 from sqlalchemy import Engine
 from sqlmodel import Session
 
 from repository.models import EnvironmentVariable
 
 from .externals import AHT20
-
-
 
 
 class EnvironmentVariableRepository(ABC):
@@ -22,7 +20,7 @@ class EnvironmentVariableRepository(ABC):
         raise NotImplementedError()
     
     @abstractmethod
-    def save_environment_varible(self, env_var: EnvironmentVariable) -> None:
+    def save(self, env_var: EnvironmentVariable) -> None:
         raise NotImplementedError()
 
 class InMemoryEnvironmentVariableRepository(EnvironmentVariableRepository):
@@ -78,7 +76,7 @@ class InMemoryEnvironmentVariableRepository(EnvironmentVariableRepository):
         Thread(target= wrapper).start()
 
 
-    def save_environment_varible(self, env_var: EnvironmentVariable) -> None:
+    def save(self, env_var: EnvironmentVariable) -> None:
         with Session(self.engine) as session:
             session.add(env_var)
             session.commit()
@@ -94,7 +92,7 @@ class Aht20EnvironmentVariableRepository(EnvironmentVariableRepository):
             humidity = round(self.driver.get_humidity(), 2)
         )
     
-    def save_environment_varible(self, env_var: EnvironmentVariable) -> None:
+    def save(self, env_var: EnvironmentVariable) -> None:
         with Session(self.engine) as session:
             session.add(env_var)
             session.commit()

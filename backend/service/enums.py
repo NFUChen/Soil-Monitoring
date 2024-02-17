@@ -4,6 +4,7 @@ from enum import Enum
 class MessageTopic(Enum):
     REPLENISHMENT = "replenishment"
     SENSOR = "sensor"
+    ALERT = "alert"
     ALERT_HUMIDITY = "alert/humidity"
     ALERT_TEMPERATURE = "alert/temperature"
 

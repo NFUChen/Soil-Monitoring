@@ -9,3 +9,4 @@ Werkzeug==2.2.2
 smbus2==0.4.3
 psycopg2==2.9.9
 sqlmodel==0.0.14
+line-bot-sdk==3.9.0

@@ -6,6 +6,8 @@ from flask.views import MethodView
 from messaging.message_broker import MessageBroker
 from repository.alert_config_repository import (AlertConfig,
                                                 AlertConfigRepository)
+from repository.gmail_notification_config_repository import (
+    GmailNotificationConfig, GmailNotificationConfigRepository)
 from repository.water_replenishment_config_repository import (
     WaterReplenishmentConfig, WaterReplenishmentConfigRepository)
 from service.water_replenishment_service.water_replenishment_service import \
@@ -18,7 +20,7 @@ def create_app(
     broker: MessageBroker, 
     water_replenishment_service: WaterReplenishmentService, 
     water_replenishment_config_repo: WaterReplenishmentConfigRepository,
-    alert_config_repo: AlertConfigRepository) -> Server[MethodView]:
+    alert_config_repo: AlertConfigRepository, gmail_config_repo: GmailNotificationConfigRepository) -> Server[MethodView]:
     server = FlaskServer(broker)
     
     
@@ -50,6 +52,12 @@ def create_app(
     def save_water_alert_config() -> dict[str, Any]:
         alert_config_dict:dict[str, Any] = request.get_json() # type: ignore
         return alert_config_repo.save_config(AlertConfig(**alert_config_dict))
+    
+    @server.app.route("/api/config/gmail_notification", methods= ["POST"])
+    def save_gmail_notification_config() -> dict[str, Any]:
+        gmail_config_dict:dict[str, Any] = request.get_json() # type: ignore
+        return gmail_config_repo.save_config(GmailNotificationConfig(**gmail_config_dict))
+    
         
     
     return server

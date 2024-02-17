@@ -4,17 +4,18 @@ import sys
 from loguru import logger
 
 from messaging.message_broker import MessageBroker
-from repository import (
-    AlertConfigRepository, 
-    EnvironmentVariableRepository, 
-    WaterReplenishmentConfigRepository,
-    InMemoryEnvironmentVariableRepository,
-    init_database
-)
-from service import MonitorService, OutputPin, WaterReplenishmentService
+from repository import (AlertConfigRepository, EmailReceiverRepository,
+                        EnvironmentVariableRepository,
+                        GmailNotificationConfigRepository,
+                        InMemoryEnvironmentVariableRepository,
+                        WaterReplenishmentConfigRepository, init_database)
+from repository.models import EmailReceiver
+from service import (CentralNotificationService, GmailNotificationService,
+                     MonitorService, OutputPin, WaterReplenishmentService)
 from web.create_flask_app import create_app
+
 logger.remove()
-logger.add(sys.stderr, level= "INFO")
+logger.add(sys.stderr, level= "INFO") # type: ignore
 
 
 message_broker = MessageBroker()
@@ -41,10 +42,23 @@ water_replenishment_service = WaterReplenishmentService(message_broker,water_rep
 
 
 
-server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo)
+
+email_receiver_repository = EmailReceiverRepository(sql_engine)
+gmail_config_repo = GmailNotificationConfigRepository()
+server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo, gmail_config_repo)
+
+
+notification_services = [
+    GmailNotificationService(1800, email_receiver_repository, gmail_config_repo)
+    
+]
+
+central_notification_service = CentralNotificationService(
+    message_broker, notification_services
+)
+
 
 
 
 if __name__ == "__main__":
-    
     server.run()

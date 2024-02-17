@@ -1,5 +1,7 @@
+import datetime
+import time
+
 import AHT20
-import datetime, time
 
 # Initialize an AHT20
 aht20 = AHT20.AHT20()
