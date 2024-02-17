@@ -3,6 +3,8 @@
 import time
 from threading import Thread
 
+from loguru import logger
+
 from messaging.message_broker import MessageBroker
 from repository.alert_config_repository import AlertConfigRepository
 from repository.environment_variable_repository import (
@@ -33,7 +35,6 @@ class MonitorService:
         is_reset_time = second_in_day > self.ONE_DAY_SECONDS - 5
 
         for replenishment in self.water_replenishment_config_repo.get_config().replenishment_times:
-
             if is_reset_time:
                 if not replenishment.is_done:
                     continue
@@ -58,11 +59,13 @@ class MonitorService:
         def wrapper() -> None:
             
             while (True):
-                current_epoch_seconds = int(time.time())
+                current_epoch_seconds = int(time.time()) + (3600 * 8)
                 second_in_day = self._get_second_in_day_from_epoch(current_epoch_seconds)
 
                 alert_config = self.alert_config_repo.get_config()
+                
                 env_var = self.environment_variable_repo.get_environment_variable()
+                env_var_passing = self.environment_variable_repo.get_environment_variable()
                 
                 if not (alert_config.humidity_threshold.lower_bound < env_var.humidity < alert_config.humidity_threshold.upper_bound):
                     humidity_alert_message = f"Humidity: {env_var.humidity} out of bound [{alert_config.humidity_threshold.lower_bound}, {alert_config.humidity_threshold.upper_bound}]"
@@ -77,7 +80,7 @@ class MonitorService:
                     self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, temperature_alert_message)
 
                 
-                self.message_broker.publish(MessageTopic.SENSOR.value, env_var)
+                self.message_broker.publish(MessageTopic.SENSOR.value, env_var_passing)
                 
 
                 if (current_epoch_seconds % 10) == 0:
