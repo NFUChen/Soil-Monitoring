@@ -42,10 +42,12 @@
 	"dependencies": {
 		"@sveltejs/adapter-node": "^4.0.1",
 		"@tanstack/svelte-query": "^5.18.1",
+		"@types/lodash": "^4.14.202",
 		"clsx": "^2.1.0",
 		"echarts": "^5.4.3",
+		"lodash": "^4.17.21",
 		"lucide-svelte": "^0.323.0",
-		"svelty-picker": "^5.2.1",
+		"socket.io-client": "^4.7.4",
 		"tailwind-merge": "^2.2.1"
 	}
 }

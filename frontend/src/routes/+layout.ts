@@ -1,13 +1,13 @@
 import { browser } from "$app/environment";
 import { QueryClient } from "@tanstack/svelte-query";
-import type { BackendErrorResponse, GernicError } from "$lib/services/commonType";
+import type { GernicError } from "$lib/services/commonType";
 import type { LayoutLoad } from "./$types";
 import { addToast } from "$lib/components/ui/providers/ToastProvider.svelte";
 
 export const load: LayoutLoad = async () => {
 	const notifyError = (error: unknown) => {
-		const e = error as GernicError<BackendErrorResponse | string>;
-		const errorMessage = typeof e.message === "string" ? e.message : e.message.error;
+		const e = error as GernicError<string>;
+		const errorMessage = e.message;
 		if (!browser) {
 			return;
 		}
