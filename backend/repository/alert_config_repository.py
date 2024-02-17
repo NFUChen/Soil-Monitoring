@@ -47,7 +47,7 @@ class AlertConfigRepository:
             py_dict = config.serialize()
             config_json = json.dumps(py_dict, indent= False)
             file.write(config_json)
-            
+        self.config = config
         return py_dict
 
     def get_config(self) -> AlertConfig:

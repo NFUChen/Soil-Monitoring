@@ -76,6 +76,8 @@ class WaterReplenishmentConfigRepository:
             py_dict = config.serialize()
             config_json = json.dumps(py_dict, indent= 4)
             file.write(config_json)
+            
+        self.config = config
         return py_dict
                 
 
