@@ -33,6 +33,10 @@ def create_app(
     def turn_off():
         water_replenishment_service.turn_off()
         return "Success"
+    
+    @server.app.route("/api/device/is_turn_on", methods= ["GET"])
+    def is_turn_on():
+        return {"is_turn_on": water_replenishment_service.is_turn_on}
 
     @server.app.route("/api/config/water_replenishment", methods= ["GET"])
     def get_water_replenishment_config():
@@ -57,6 +61,9 @@ def create_app(
     def save_gmail_notification_config() -> dict[str, Any]:
         gmail_config_dict:dict[str, Any] = request.get_json() # type: ignore
         return gmail_config_repo.save_config(GmailNotificationConfig(**gmail_config_dict))
+    
+    
+    
     
         
     

@@ -51,6 +51,10 @@ class WaterReplenishmentService:
 
     def turn_off(self) -> None:
         self.replenishment_output_device.turn_off()
+        
+    
+    def is_turn_on(self) -> bool:
+        return self.replenishment_output_device.is_turn_on
 
 
 
