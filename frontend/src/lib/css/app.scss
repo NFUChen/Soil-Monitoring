@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html {
+		$max-font-size: 18;
+		$min-font-size: 16;
+		font-size: clamp(
+			#{$min-font-size}px,
+			calc(
+				#{$min-font-size}px + ($max-font-size - $min-font-size) * ((100vw - 400px) / (1920 - 400))
+			),
+			#{$max-font-size}px
+		);
+	}
+}
