@@ -12,7 +12,7 @@ RESOURCES = {
     }
 }
 
-class TranslateKey(Enum):
+class TranslationKey(Enum):
     TMPERATURE_OUT_OF_BOUND = "temperature_out_of_bound"
     HUMIDITY_OUT_OF_BOUND = "humidity_out_of_bound"
 class LanguageType(Enum):
@@ -28,7 +28,7 @@ class LanguageService:
     def change_language(self, language_type: LanguageType):
         self.language_type = language_type
 
-    def translate(self, key: TranslateKey) -> str:
+    def translate(self, key: TranslationKey) -> str:
         language_content = self.language_resource[self.language_type.value]
 
         return language_content.get(key.value) or ""

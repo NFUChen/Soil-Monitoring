@@ -12,7 +12,7 @@ from repository.environment_variable_repository import (
 from repository.water_replenishment_config_repository import \
     WaterReplenishmentConfigRepository
 from service.enums import MessageTopic
-from service.language_service.language_service import LanguageService, TranslateKey
+from service.language_service.language_service import LanguageService, TranslationKey
 
 
 class MonitorService:
@@ -70,7 +70,7 @@ class MonitorService:
                 env_var_passing = self.environment_variable_repo.get_environment_variable()
                 
                 if not (alert_config.humidity_threshold.lower_bound < env_var.humidity < alert_config.humidity_threshold.upper_bound):
-                    humidity_alert_message = self.language_service.translate(TranslateKey.HUMIDITY_OUT_OF_BOUND).format(
+                    humidity_alert_message = self.language_service.translate(TranslationKey.HUMIDITY_OUT_OF_BOUND).format(
                         current_humidity= env_var.humidity, 
                         lower_bound= alert_config.humidity_threshold.lower_bound, 
                         upper_bound = alert_config.humidity_threshold.upper_bound
@@ -79,7 +79,7 @@ class MonitorService:
                     self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, humidity_alert_message)
                 
                 if not (alert_config.temperature_threshold.lower_bound < env_var.temperature < alert_config.temperature_threshold.upper_bound):
-                    temperature_alert_message = self.language_service.translate(TranslateKey.TMPERATURE_OUT_OF_BOUND).format(
+                    temperature_alert_message = self.language_service.translate(TranslationKey.TMPERATURE_OUT_OF_BOUND).format(
                         current_temperature= env_var.temperature, 
                         lower_bound= alert_config.temperature_threshold.lower_bound, 
                         upper_bound = alert_config.temperature_threshold.upper_bound
