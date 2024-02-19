@@ -3,7 +3,11 @@
 	import io from "socket.io-client";
 
 	const baseUrl: string = env.PUBLIC_BASE_URL;
-	export const socket = io(baseUrl);
+	export const socket = io(baseUrl, {
+		extraHeaders: {
+			"ngrok-skip-browser-warning": "true",
+		},
+	});
 </script>
 
 <script lang="ts">

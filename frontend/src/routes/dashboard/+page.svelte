@@ -31,7 +31,6 @@
 	let isPreventClicking = false;
 	let nextRemainSeconds = 0;
 	let nextRemainInterval: number;
-	let replenishmentTimes: WaterReplenishmentTime[] = [];
 
 	const getAlertConfigMutation = createMutation({
 		mutationKey: ["alertConfig"],
@@ -92,11 +91,10 @@
 		minHumidityValue = humidity_threshold.lower_bound;
 		maxHumidityValue = humidity_threshold.upper_bound;
 	};
+
 	const initReplenish = async () => {
 		// get replenishment times
-		const waterReplenishResponse =
-			await $getWaterReplenishmentConfigMutation.mutateAsync(undefined);
-		replenishmentTimes = waterReplenishResponse.replenishment_times || [];
+		await $getWaterReplenishmentConfigMutation.mutateAsync(undefined);
 
 		if (replenishmentTimes.length) {
 			nextRemainSeconds = getNextReplenishmentTime();
@@ -147,7 +145,8 @@
 		socket.off("sensor");
 	});
 
-	$: remainReplenishmentTimes = replenishmentTimes.filter((time) => !time.is_done);
+	$: replenishmentTimes = $getWaterReplenishmentConfigMutation.data?.replenishment_times ?? [];
+	$: remainReplenishmentTimes = replenishmentTimes.filter((time) => !time.is_done) ?? [];
 </script>
 
 <div class="flex grow flex-col gap-4 overflow-y-auto p-4">
