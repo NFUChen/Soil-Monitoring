@@ -2,13 +2,13 @@ from enum import Enum
 
 
 RESOURCES = {
-    "en": {
-        "temperature_out_of_bound": f"Temperature: {{current_temperature}} out of bound [{{lower_bound}}, {{upper_bound}}]",
-        "humidity_out_of_bound": f"Humidity: {{current_humidity}} out of bound [{{lower_bound}}, {{upper_bound}}]"
+    "temperature_out_of_bound": {
+        "en":f"Temperature: {{current_temperature}} out of bound [{{lower_bound}}, {{upper_bound}}]",
+        "chi": f"溫度: {{current_temperature}} 超出界線值 [{{lower_bound}}, {{upper_bound}}]"
     },
-    "chi": {
-        "temperature_out_of_bound": f"溫度: {{current_temperature}} 超出界線值 [{{lower_bound}}, {{upper_bound}}]",
-        "humidity_out_of_bound": f"濕度: {{current_humidity}} 超出界線值 [{{lower_bound}}, {{upper_bound}}]"
+    "humidity_out_of_bound": {
+        "en": f"Humidity: {{current_humidity}} out of bound [{{lower_bound}}, {{upper_bound}}]",
+        "chi": f"濕度: {{current_humidity}} 超出界線值 [{{lower_bound}}, {{upper_bound}}]"
     }
 }
 
@@ -29,7 +29,9 @@ class LanguageService:
         self.language_type = language_type
 
     def translate(self, key: TranslationKey) -> str:
-        language_content = self.language_resource[self.language_type.value]
+        language_content = self.language_resource.get(key.value)
+        if language_content is None:
+            return ""
 
-        return language_content.get(key.value) or ""
+        return language_content.get(self.language_type.value, "")
 
