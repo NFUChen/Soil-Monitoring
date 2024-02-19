@@ -30,6 +30,7 @@
 	let isHumidityAlert = false;
 	let isPreventClicking = false;
 	let nextRemainSeconds = 0;
+	let replenishmentTimes: WaterReplenishmentTime[] = [];
 	let nextRemainInterval: number;
 
 	const getAlertConfigMutation = createMutation({
@@ -92,10 +93,14 @@
 		maxHumidityValue = humidity_threshold.upper_bound;
 	};
 
+	const getReplenishmentTimes = async () => {
+		const response = await $getWaterReplenishmentConfigMutation.mutateAsync(undefined);
+		replenishmentTimes = response.replenishment_times;
+	};
+
 	const initReplenish = async () => {
 		// get replenishment times
-		await $getWaterReplenishmentConfigMutation.mutateAsync(undefined);
-
+		await getReplenishmentTimes();
 		if (replenishmentTimes.length) {
 			nextRemainSeconds = getNextReplenishmentTime();
 
@@ -109,7 +114,7 @@
 				nextRemainSeconds--;
 				// if this turn is done, get next turn
 				if (nextRemainSeconds <= 0) {
-					await $getWaterReplenishmentConfigMutation.mutateAsync(undefined);
+					await getReplenishmentTimes();
 					nextRemainSeconds = getNextReplenishmentTime();
 				}
 			}, 1000);
@@ -145,7 +150,6 @@
 		socket.off("sensor");
 	});
 
-	$: replenishmentTimes = $getWaterReplenishmentConfigMutation.data?.replenishment_times ?? [];
 	$: remainReplenishmentTimes = replenishmentTimes.filter((time) => !time.is_done) ?? [];
 </script>
 

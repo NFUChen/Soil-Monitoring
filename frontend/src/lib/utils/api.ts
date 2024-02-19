@@ -48,6 +48,7 @@ const send = async ({ method, path, params, data, headers, origin }: SendParams)
 	opts.method = method;
 
 	opts.headers = new Headers(headers);
+	opts.headers.append('ngrok-skip-browser-warning', 'true');
 
 	// opts.credentials = "include";
 

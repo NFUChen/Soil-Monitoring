@@ -138,7 +138,7 @@
 
 		if (item.id === "replenish-time") {
 			let time = item.value.split(":");
-			time = time.filter((t) => parseInt(t));
+			time = time.filter((t) => !isNaN(Number(t)));
 
 			if (time.length !== 3) {
 				item.error = "請輸入正確的時間格式";
