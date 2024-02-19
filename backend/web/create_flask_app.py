@@ -13,6 +13,7 @@ from repository.gmail_notification_config_repository import (
     GmailNotificationConfig, GmailNotificationConfigRepository)
 from repository.water_replenishment_config_repository import (
     WaterReplenishmentConfig, WaterReplenishmentConfigRepository)
+from service.language_service.language_service import LanguageService, LanguageType
 from service.water_replenishment_service.water_replenishment_service import \
     WaterReplenishmentService
 from web.flask_server import FlaskServer
@@ -25,7 +26,8 @@ def create_app(
     water_replenishment_config_repo: WaterReplenishmentConfigRepository,
     alert_config_repo: AlertConfigRepository, 
     gmail_config_repo: GmailNotificationConfigRepository, 
-    environment_variable_repo: EnvironmentVariableRepository) -> Server[MethodView]:
+    environment_variable_repo: EnvironmentVariableRepository,
+    language_service: LanguageService) -> Server[MethodView]:
     server = FlaskServer(broker)
     
     
@@ -72,6 +74,20 @@ def create_app(
         return json.dumps([
             env_var.to_dict() for env_var in environment_variable_repo.find_all_environment_variable_of_current_day(int(time.time()))
         ])
+    
+    @server.app.route("/api/language/change_language", methods= ["POST"])
+    def change_language() -> tuple[str, int]:
+        language_dict: dict[str, str] = request.get_json() # type: ignore
+
+        valid_language_types = [_type.name for _type in LanguageType]
+        chosen_language = language_dict["language"]
+        if chosen_language not in valid_language_types:
+            return f"Unsupported language, please enter one of the following: {valid_language_types}", 400
+
+        language_service.change_language(LanguageType[language_dict["language"]])
+
+        return "Success", 200
+        
     
     
         

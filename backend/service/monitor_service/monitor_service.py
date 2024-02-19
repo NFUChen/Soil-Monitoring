@@ -12,6 +12,7 @@ from repository.environment_variable_repository import (
 from repository.water_replenishment_config_repository import \
     WaterReplenishmentConfigRepository
 from service.enums import MessageTopic
+from service.language_service.language_service import LanguageService, TranslateKey
 
 
 class MonitorService:
@@ -20,12 +21,13 @@ class MonitorService:
                  environment_variable_repo: EnvironmentVariableRepository, 
                  alert_config_repo: AlertConfigRepository, 
                  water_replenishment_config_repo: WaterReplenishmentConfigRepository,
-                 message_broker: MessageBroker) -> None:
+                 message_broker: MessageBroker, 
+                 language_service: LanguageService) -> None:
         self.message_broker = message_broker
         self.alert_config_repo = alert_config_repo
         self.environment_variable_repo = environment_variable_repo
         self.water_replenishment_config_repo = water_replenishment_config_repo
-
+        self.language_service = language_service
 
         self._start_monitor_thread()
 
@@ -68,14 +70,20 @@ class MonitorService:
                 env_var_passing = self.environment_variable_repo.get_environment_variable()
                 
                 if not (alert_config.humidity_threshold.lower_bound < env_var.humidity < alert_config.humidity_threshold.upper_bound):
-                    humidity_alert_message = f"Humidity: {env_var.humidity} out of bound [{alert_config.humidity_threshold.lower_bound}, {alert_config.humidity_threshold.upper_bound}]"
-
+                    humidity_alert_message = self.language_service.translate(TranslateKey.HUMIDITY_OUT_OF_BOUND).format(
+                        current_humidity= env_var.humidity, 
+                        lower_bound= alert_config.humidity_threshold.lower_bound, 
+                        upper_bound = alert_config.humidity_threshold.upper_bound
+                    )
                     self.message_broker.publish(MessageTopic.ALERT.value, humidity_alert_message)
                     self.message_broker.publish(MessageTopic.ALERT_HUMIDITY.value, humidity_alert_message)
                 
                 if not (alert_config.temperature_threshold.lower_bound < env_var.temperature < alert_config.temperature_threshold.upper_bound):
-                    temperature_alert_message = f"Temperature: {env_var.temperature} out of bound [{alert_config.temperature_threshold.lower_bound}, {alert_config.temperature_threshold.upper_bound}]"
-                    
+                    temperature_alert_message = self.language_service.translate(TranslateKey.TMPERATURE_OUT_OF_BOUND).format(
+                        current_temperature= env_var.temperature, 
+                        lower_bound= alert_config.temperature_threshold.lower_bound, 
+                        upper_bound = alert_config.temperature_threshold.upper_bound
+                    )
                     self.message_broker.publish(MessageTopic.ALERT.value, temperature_alert_message)
                     self.message_broker.publish(MessageTopic.ALERT_TEMPERATURE.value, temperature_alert_message)
 

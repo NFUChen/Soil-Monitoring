@@ -11,7 +11,8 @@ from repository import (AlertConfigRepository, EmailReceiverRepository,
                         Aht20EnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
 from repository.models import EmailReceiver
 from service import (CentralNotificationService, GmailNotificationService,
-                     MonitorService, OutputPin, WaterReplenishmentService)
+                     MonitorService, OutputPin, WaterReplenishmentService,
+                     RESOURCES, LanguageService)
 from web.create_flask_app import create_app
 
 logger.remove()
@@ -27,13 +28,14 @@ if os.environ.get("MODE", None) == "PROD":
     driver = Aht20EnvironmentVariableDriver()
 
 env_repo: EnvironmentVariableRepository = EnvironmentVariableRepository(driver, sql_engine)
-    
+
+language_service = LanguageService(RESOURCES)
 
 
 alert_config_repo = AlertConfigRepository()
 water_replenishment_config_repo = WaterReplenishmentConfigRepository()
 
-monitor_service = MonitorService(env_repo, alert_config_repo, water_replenishment_config_repo,message_broker)
+monitor_service = MonitorService(env_repo, alert_config_repo, water_replenishment_config_repo,message_broker, language_service)
 
 output_pin = OutputPin(17)
 water_replenishment_service = WaterReplenishmentService(message_broker,water_replenishment_config_repo, output_pin)
@@ -44,7 +46,7 @@ water_replenishment_service = WaterReplenishmentService(message_broker,water_rep
 
 email_receiver_repository = EmailReceiverRepository(sql_engine)
 gmail_config_repo = GmailNotificationConfigRepository()
-server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo, gmail_config_repo, env_repo)
+server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo, gmail_config_repo, env_repo, language_service)
 
 
 notification_services = [

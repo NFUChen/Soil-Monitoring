@@ -5,3 +5,5 @@ from .notification_service import (CentralNotificationService,
                                    LineBotNotificationService)
 from .water_replenishment_service.water_replenishment_service import \
     WaterReplenishmentService
+
+from .language_service.language_service import LanguageService, RESOURCES
