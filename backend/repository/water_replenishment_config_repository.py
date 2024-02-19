@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from dataclasses import dataclass
 from typing import Any, Optional
@@ -39,6 +40,45 @@ class WaterReplenishmentConfig(Serializable):
             return
 
         self.replenishment_times = replenishment_times
+
+        self.replenishment_times = sorted(self._auto_merge_replenishments(), key= lambda replenishment: replenishment.timestamp)
+
+    def _auto_merge_replenishments(self) -> list[WaterReplenishment]:
+        logger.info("[REPLENISHMENT MERGING] Starting _auto_merge_replenishments function...")
+        is_conflicting = False
+
+        timestamp_set = set()
+        for replenishment_time in self.replenishment_times:
+            for timestamp in range(replenishment_time.timestamp, replenishment_time.timestamp + math.ceil(replenishment_time.duration)):
+                if timestamp in timestamp_set:
+                    is_conflicting = True
+                timestamp_set.add(timestamp)
+
+        
+        if not is_conflicting:
+            logger.info("[REPLENISHMENT MERGING ABORTING] No conflicting replenishments found.")
+            return self.replenishment_times
+        
+
+        logger.info("[REPLENISHMENT MERGING REQUIRED] Conflicting replenishments found. Merging...")
+        merged_replenishments: list[WaterReplenishment] = []
+        for timestamp in timestamp_set:
+            if (timestamp - 1) in timestamp_set: # searching for starting point
+                continue
+            logger.info(f"[REPLENISHMENT TIMESTAMP FOUND] Replenishment timestamp startigng porint found: {timestamp}")
+            current_duration = 0
+            while (timestamp + current_duration) in timestamp_set:
+                logger.debug(f"[REPLENISHMENT DURATION INCREMENTING] Current duration: {current_duration}")
+                current_duration += 1
+            replenishment = WaterReplenishment(timestamp= timestamp, duration= current_duration)
+            merged_replenishments.append(replenishment)
+            logger.info(f"[ADD REPLENISHMENT] Replenishment appended: {replenishment}")
+
+        logger.info("[REPLENISHMENT MERGING COMPLETE] Merging complete. Resulting replenishments:")
+        for replenishment in merged_replenishments:
+            logger.info(f"[REPLENISHMENT MERGING REPORT] Timestamp: {replenishment.timestamp}, Duration: {replenishment.duration}")
+            
+        return merged_replenishments
         
         
     def _time_string_to_seconds(self, time_str: str) -> int:
