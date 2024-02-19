@@ -58,7 +58,7 @@ class FlaskServer(Server[MethodView]):
         self.message_queue.append(SocketMessage(topic, {"message": alert_message}))
 
     def _handle_sensor_emit(self, topic: str, env_var: EnvironmentVariable) -> None:
-        self.message_queue.append(SocketMessage(topic, {"temperature": env_var.temperature, "humidity": env_var.humidity}))
+        self.message_queue.append(SocketMessage(topic, env_var.to_dict()))
 
     def register_routes(self, request_mapping: str, method_view: MethodView) -> None:
         self.app.add_url_rule(request_mapping, view_func= method_view.as_view(request_mapping))
@@ -71,7 +71,7 @@ class FlaskServer(Server[MethodView]):
                     continue
                 
                 socket_message = self.message_queue.pop(0)
-                self.socketio.emit(socket_message.topic,str(socket_message.content))
+                self.socketio.emit(socket_message.topic,json.dumps(socket_message.content))
 
         Thread(target= wrapper).start()
 

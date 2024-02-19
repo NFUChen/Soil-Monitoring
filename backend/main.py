@@ -7,8 +7,8 @@ from messaging.message_broker import MessageBroker
 from repository import (AlertConfigRepository, EmailReceiverRepository,
                         EnvironmentVariableRepository,
                         GmailNotificationConfigRepository,
-                        InMemoryEnvironmentVariableRepository,
-                        WaterReplenishmentConfigRepository, init_database)
+                        WaterReplenishmentConfigRepository, init_database, 
+                        Aht20EnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
 from repository.models import EmailReceiver
 from service import (CentralNotificationService, GmailNotificationService,
                      MonitorService, OutputPin, WaterReplenishmentService)
@@ -20,14 +20,13 @@ logger.add(sys.stderr, level= "INFO") # type: ignore
 
 message_broker = MessageBroker()
 sql_engine = init_database()
-env_repo: EnvironmentVariableRepository = InMemoryEnvironmentVariableRepository(sql_engine)
 
+driver = InMemoryEnvironmentVariableDriver()
 if os.environ.get("MODE", None) == "PROD":
     logger.info("[PROD MODE DETECTED] Current mode is production mode, use AHT20 powered environment repository.")
-    from repository import AHT20, Aht20EnvironmentVariableRepository
-    aht20 = AHT20()
-    env_repo = Aht20EnvironmentVariableRepository(aht20, sql_engine)
+    driver = Aht20EnvironmentVariableDriver()
 
+env_repo: EnvironmentVariableRepository = EnvironmentVariableRepository(driver, sql_engine)
     
 
 
@@ -45,7 +44,7 @@ water_replenishment_service = WaterReplenishmentService(message_broker,water_rep
 
 email_receiver_repository = EmailReceiverRepository(sql_engine)
 gmail_config_repo = GmailNotificationConfigRepository()
-server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo, gmail_config_repo)
+server = create_app(message_broker, water_replenishment_service, water_replenishment_config_repo, alert_config_repo, gmail_config_repo, env_repo)
 
 
 notification_services = [

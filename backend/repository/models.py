@@ -1,6 +1,6 @@
 import time
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 from uuid import UUID, uuid4
 
 from loguru import logger
@@ -14,8 +14,12 @@ class EnvironmentVariable(SQLModel, table= True):
     timestamp: Optional[int] = Field(default_factory= time.time, nullable= False)
     id: Optional[UUID] = Field(default_factory= uuid4, primary_key= True, nullable= False)
 
-    def to_dict(self) -> dict[str, float]:
-        return self.__dict__
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "temperature": self.temperature,
+            "humidity": self.humidity,
+            "timestamp": self.timestamp
+        }
 
 class EmailReceiver(SQLModel, table= True):
     email: str = Field(unique= True)

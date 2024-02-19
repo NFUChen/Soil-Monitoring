@@ -1,3 +1,5 @@
+import json
+import time
 from typing import Any
 
 from flask import request
@@ -6,6 +8,7 @@ from flask.views import MethodView
 from messaging.message_broker import MessageBroker
 from repository.alert_config_repository import (AlertConfig,
                                                 AlertConfigRepository)
+from repository.environment_variable_repository import EnvironmentVariableRepository
 from repository.gmail_notification_config_repository import (
     GmailNotificationConfig, GmailNotificationConfigRepository)
 from repository.water_replenishment_config_repository import (
@@ -20,7 +23,9 @@ def create_app(
     broker: MessageBroker, 
     water_replenishment_service: WaterReplenishmentService, 
     water_replenishment_config_repo: WaterReplenishmentConfigRepository,
-    alert_config_repo: AlertConfigRepository, gmail_config_repo: GmailNotificationConfigRepository) -> Server[MethodView]:
+    alert_config_repo: AlertConfigRepository, 
+    gmail_config_repo: GmailNotificationConfigRepository, 
+    environment_variable_repo: EnvironmentVariableRepository) -> Server[MethodView]:
     server = FlaskServer(broker)
     
     
@@ -62,7 +67,11 @@ def create_app(
         gmail_config_dict:dict[str, Any] = request.get_json() # type: ignore
         return gmail_config_repo.save_config(GmailNotificationConfig(**gmail_config_dict))
     
-    
+    @server.app.route("/api/report/daily_environment_variable", methods = ["GET"])
+    def get_daily_environment_variables() -> str:
+        return json.dumps([
+            env_var.to_dict() for env_var in environment_variable_repo.find_all_environment_variable_of_current_day(int(time.time()))
+        ])
     
     
         

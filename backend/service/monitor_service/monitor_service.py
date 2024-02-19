@@ -83,7 +83,7 @@ class MonitorService:
                 self.message_broker.publish(MessageTopic.SENSOR.value, env_var_passing)
                 
 
-                if (current_epoch_seconds % 10) == 0:
+                if (current_epoch_seconds % 60) == 0:
                     self.environment_variable_repo.save(env_var)
 
 
