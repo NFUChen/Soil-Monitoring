@@ -32,25 +32,25 @@ def create_app(
     
     
     @server.app.route('/api/device/turn_on', methods=['GET'])
-    def turn_on():
+    def turn_on() -> str:
         water_replenishment_service.turn_on()
         return "Success"
 
     @server.app.route('/api/device/turn_off', methods=['GET'])
-    def turn_off():
+    def turn_off() -> str:
         water_replenishment_service.turn_off()
         return "Success"
     
     @server.app.route("/api/device/is_turn_on", methods= ["GET"])
-    def is_turn_on():
-        return {"is_turn_on": water_replenishment_service.is_turn_on}
+    def is_turn_on() -> dict[str, bool]:
+        return {"is_turn_on": water_replenishment_service.is_turn_on()}
 
     @server.app.route("/api/config/water_replenishment", methods= ["GET"])
-    def get_water_replenishment_config():
+    def get_water_replenishment_config() -> dict[str, Any]:
         return water_replenishment_config_repo.config.serialize()
 
     @server.app.route("/api/config/alert", methods= ["GET"])
-    def get_alert_config():
+    def get_alert_config() -> dict[str, Any]:
         return alert_config_repo.config.serialize()
     
     @server.app.route("/api/config/water_replenishment", methods= ["POST"])
@@ -70,10 +70,12 @@ def create_app(
         return gmail_config_repo.save_config(GmailNotificationConfig(**gmail_config_dict))
     
     @server.app.route("/api/report/daily_environment_variable", methods = ["GET"])
-    def get_daily_environment_variables() -> str:
-        return json.dumps([
+    def get_daily_environment_variables() -> dict[str, list[dict[str, Any]]]:
+        return {
+            "data": [
             env_var.to_dict() for env_var in environment_variable_repo.find_all_environment_variable_of_current_day(int(time.time()))
-        ])
+        ]
+        }
     
     @server.app.route("/api/language/change_language", methods= ["POST"])
     def change_language() -> tuple[str, int]:
