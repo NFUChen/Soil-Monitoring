@@ -7,15 +7,16 @@ export const maskTime = (value: string) => {
 		return value.slice(0, -1);
 	}
 
+	value = value.split(":").join("");
 	let i = 0;
 
 	while (i < 8) {
-		if (
-			(value.length > colonPosition[0] && i === colonPosition[0]) ||
-			(value.length > colonPosition[1] && i === colonPosition[1])
-		) {
-			if (value[i] !== ":") {
-				value = value.slice(0, i) + ":" + value.slice(i);
+		for (const cp of colonPosition)
+		{
+			if (value.length > cp && i === cp) {
+				if (value[i] !== ":") {
+					value = value.slice(0, i) + ":" + value.slice(i);
+				}
 			}
 		}
 		i++;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import type { DailyEnvVariable, GetDailyEnvVariableResponse } from "$lib/services/report/type";
 	import { cn } from "$lib/utils/utils";
 	import * as echarts from "echarts";
 	import { onMount } from "svelte";
@@ -7,57 +8,67 @@
 	let className: string | undefined = undefined;
 
 	export { className as class };
+	export let envDatas: DailyEnvVariable[] = [];
 
 	type EChartsOption = echarts.EChartsOption;
 
 	let chartDom: HTMLDivElement;
+	let chart: echarts.ECharts;
 	let option: EChartsOption;
 
-	let halfHour = 30 * 60 * 1000;
-	let time = [];
-	let temparatureData = [];
-	let humidityData = [];
+	const convertTimestampToTime = (timestamp: number) => {
+		return new Date(timestamp).toLocaleTimeString("en-US", {
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: false,
+		});
+	};
 
-	for (let i = 1; i <= 48; i++) {
-		// get today every half hour since  00:00
-		const now = new Date();
-		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-		const t = new Date(today.getTime() + i * halfHour);
-		// 20 - 40 degrees random
-		const temp = Math.floor(Math.random() * (40 - 30 + 1)) + 30;
-		const humid = Math.floor(Math.random() * (70 - 50 + 1)) + 50;
+	onMount(() => {
+		if (!browser) return;
+		chart = echarts.init(chartDom);
+		window.onresize = () => {
+			chart.resize();
+		};
+	});
 
-		time.push(t.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }));
-		temparatureData.push(temp);
-		humidityData.push(humid);
-	}
-
-	option = {
+	$: time = envDatas.map((x) => convertTimestampToTime(x.timestamp * 1000)) ?? [];
+	$: temparatureData = envDatas.map((x) => x.temperature) ?? [];
+	$: humidityData = envDatas.map((x) => x.humidity) ?? [];
+	$: option, option && chart?.setOption(option);
+	$: option = {
 		tooltip: {
 			trigger: "axis",
-			position: function (pt) {
-				return [pt[0], "10%"];
-			},
 		},
+		dataZoom: [
+			{
+				show: true,
+				realtime: true,
+				start: 75,
+				end: 100,
+				xAxisIndex: [0, 1],
+			},
+		],
 		grid: {
 			left: "2%",
 			right: "2%",
-			bottom: "2%",
+			bottom: "15%",
 			containLabel: true,
 		},
 		legend: {
 			data: ["溫度", "濕度"],
 			right: 10,
-      textStyle: {
-        color: 'hsl(0, 0%, 96%)'
-      }
+			textStyle: {
+				color: "hsl(0, 0%, 96%)",
+			},
 		},
-    title: {
-      text: '溫濕度圖表',
-      textStyle: {
-        color: 'hsl(0, 0%, 96%)'
-      }
-    },
+		title: {
+			text: "溫濕度圖表",
+			textStyle: {
+				color: "hsl(0, 0%, 96%)",
+			},
+		},
 		xAxis: {
 			splitLine: {
 				show: true,
@@ -71,7 +82,6 @@
 				},
 			},
 			type: "category",
-			boundaryGap: [0, 0.05],
 			data: time,
 		},
 		yAxis: {
@@ -86,7 +96,7 @@
 				},
 			},
 			type: "value",
-			boundaryGap: [0, 0.2],
+			boundaryGap: [0, 0.5],
 		},
 		series: [
 			{
@@ -111,17 +121,6 @@
 			},
 		],
 	};
-
-	onMount(() => {
-		const myChart = echarts.init(chartDom);
-		option && myChart.setOption(option);
-
-		if (!browser) return;
-
-		window.onresize = () => {
-			myChart.resize();
-		};
-	});
 </script>
 
 <div bind:this={chartDom} class={cn("w-full", className)} />

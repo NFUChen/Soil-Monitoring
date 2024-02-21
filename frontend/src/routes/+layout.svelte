@@ -1,15 +1,3 @@
-<script context="module" lang="ts">
-	import { env } from "$env/dynamic/public";
-	import io from "socket.io-client";
-
-	const baseUrl: string = env.PUBLIC_BASE_URL;
-	export const socket = io(baseUrl, {
-		extraHeaders: {
-			"ngrok-skip-browser-warning": "true",
-		},
-	});
-</script>
-
 <script lang="ts">
 	import "../lib/css/app.scss";
 	import "../lib/css/scrollbar.scss";
@@ -20,14 +8,9 @@
 	import ToastProvider from "$lib/components/ui/providers/ToastProvider.svelte";
 	import { useResizeDetector } from "$lib/stores/sizeStore";
 	import HeaderNav from "$lib/components/pages/layout/HeaderNav.svelte";
-	import { onDestroy } from "svelte";
 
 	export let data: LayoutData;
 
-	onDestroy(() => {
-		socket.offAny();
-		socket.disconnect();
-	});
 </script>
 
 <div
