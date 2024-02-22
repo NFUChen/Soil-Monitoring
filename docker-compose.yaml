@@ -32,5 +32,6 @@ services:
       dockerfile: dockerfile
     environment:
       - PUBLIC_BASE_URL=http://192.168.0.70:5001
+      - PUBLIC_SOCKET_URL=http://192.168.0.70:5001
     ports:
       - "3000:3000"
