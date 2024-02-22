@@ -86,6 +86,8 @@
 	$: isLoading = $getAlertConfigMutation.isPending || $saveAlertConfigMutation.isPending;
 </script>
 
+<title>土壤溫濕度-警示設置</title>
+
 <div class="flex grow flex-col overflow-hidden p-4">
 	<div
 		class="flex flex-col overflow-hidden border border-t-4 border-surface-700 border-t-primary-600">

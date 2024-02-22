@@ -235,6 +235,8 @@
 	$: replenishLabel = isDeviceTurnOn ? "開啟" : "關閉";
 </script>
 
+<title>土壤溫濕度-監控面板</title>
+
 <div class="flex grow flex-col gap-4 overflow-y-auto p-4">
 	<div class="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:h-60 xl:grid-cols-4">
 		<!-- 溫度 -->

@@ -160,6 +160,8 @@
 		replenishmentTimes.every((time) => selectedReplenishmentTimes.includes(time.timestamp));
 </script>
 
+<title>土壤溫濕度-補水參數</title>
+
 <Modal
 	title="新增參數"
 	bodyClass="overflow-visible"
