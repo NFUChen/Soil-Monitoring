@@ -5,9 +5,6 @@
 	const baseUrl: string = env.PUBLIC_SOCKET_URL;
 	export const socket = io(baseUrl, {
 		autoConnect: false,
-		extraHeaders: {
-			"ngrok-skip-browser-warning": "true",
-		},
 	});
 </script>
 
