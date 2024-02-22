@@ -2,7 +2,7 @@
 	import { env } from "$env/dynamic/public";
 	import io from "socket.io-client";
 
-	const baseUrl: string = env.PUBLIC_BASE_URL;
+	const baseUrl: string = env.PUBLIC_SOCKET_URL;
 	export const socket = io(baseUrl, {
 		autoConnect: false,
 		extraHeaders: {
