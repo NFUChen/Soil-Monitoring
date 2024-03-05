@@ -8,8 +8,8 @@ services:
       dockerfile: dockerfile
     ports:
       - "5001:5000"
-    # environment:
-      # - MODE=PROD # PROD or not specified, not specified will be in dev mode
+    environment:
+      - MODE=DHT20 # AHT20/DHT20 or not specified, not specified will be in dev mode
     privileged: true
 
   sensor-db:

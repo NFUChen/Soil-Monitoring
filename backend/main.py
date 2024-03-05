@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Type
 
 from loguru import logger
 
@@ -8,7 +9,8 @@ from repository import (AlertConfigRepository, EmailReceiverRepository,
                         EnvironmentVariableRepository,
                         GmailNotificationConfigRepository,
                         WaterReplenishmentConfigRepository, init_database, 
-                        Aht20EnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
+                        AHT20EnvironmentVariableDriver, DHT20EnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
+from repository.environment_variable_repository import EnvironmentVariableDriver
 from repository.models import EmailReceiver
 from service import (CentralNotificationService, GmailNotificationService,
                      MonitorService, OutputPin, WaterReplenishmentService,
@@ -22,10 +24,16 @@ logger.add(sys.stderr, level= "INFO") # type: ignore
 message_broker = MessageBroker()
 sql_engine = init_database()
 
-driver = InMemoryEnvironmentVariableDriver()
-if os.environ.get("MODE", None) == "PROD":
-    logger.info("[PROD MODE DETECTED] Current mode is production mode, use AHT20 powered environment repository.")
-    driver = Aht20EnvironmentVariableDriver()
+driver_lookup: dict[str, Type[EnvironmentVariableDriver]] = {
+    "MEMORY": InMemoryEnvironmentVariableDriver,
+    "AHT20": AHT20EnvironmentVariableDriver,
+    "DHT20": DHT20EnvironmentVariableDriver
+}
+
+driver_key = os.environ.get("MODE", "MEMORY")
+
+driver: EnvironmentVariableDriver = driver_lookup[driver_key]()
+
 
 env_repo: EnvironmentVariableRepository = EnvironmentVariableRepository(driver, sql_engine)
 

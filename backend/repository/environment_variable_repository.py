@@ -11,14 +11,14 @@ from sqlmodel import Session, select
 
 from repository.models import EnvironmentVariable
 
-from .externals import AHT20
+from .externals import AHT20, DHT20
 
 class EnvironmentVariableDriver(ABC):
     @abstractmethod
     def get_environment_variable(self) -> EnvironmentVariable:
         raise NotImplementedError()
     
-class Aht20EnvironmentVariableDriver(EnvironmentVariableDriver):
+class AHT20EnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
         self.driver = AHT20()
     
@@ -26,6 +26,17 @@ class Aht20EnvironmentVariableDriver(EnvironmentVariableDriver):
         return EnvironmentVariable(
             temperature = round(self.driver.get_temperature(), 2),
             humidity = round(self.driver.get_humidity(), 2)
+        )
+        
+class DHT20EnvironmentVariableDriver(EnvironmentVariableDriver):
+    def __init__(self) -> None:
+        self.driver = DHT20()
+    
+    def get_environment_variable(self) -> EnvironmentVariable:
+        temperature, humidity = self.driver.read()
+        return EnvironmentVariable(
+            temperature = round(temperature.value, 2),
+            humidity = round(humidity.value, 2)
         )
 
 class InMemoryEnvironmentVariableDriver(EnvironmentVariableDriver):

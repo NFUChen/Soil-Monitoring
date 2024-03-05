@@ -1,0 +1,1 @@
+from .DHT20 import DHT20
