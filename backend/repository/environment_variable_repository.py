@@ -12,11 +12,31 @@ from sqlmodel import Session, select
 from repository.models import EnvironmentVariable
 
 from .externals import AHT20, DHT20
+import Adafruit_DHT
 
 class EnvironmentVariableDriver(ABC):
     @abstractmethod
     def get_environment_variable(self) -> EnvironmentVariable:
         raise NotImplementedError()
+    
+
+class DHT22EnvironmentVariableDriver(EnvironmentVariableDriver):
+    def __init__(self) -> None:
+        self.pin = 23
+        self.driver = Adafruit_DHT
+
+        self.sensor = self.driver.DHT22
+    
+    def get_environment_variable(self) -> EnvironmentVariable:
+        humidity, temperature = self.driver.read_retry(self.sensor, self.pin) # type: ignore
+        if humidity is None:
+            humidity: float = 0
+        if temperature is None:
+            temperature: float = 0
+        return EnvironmentVariable(
+            temperature = round(humidity, 2),
+            humidity = round(temperature, 2)
+        )
     
 class AHT20EnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:

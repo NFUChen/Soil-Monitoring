@@ -2,7 +2,12 @@ from .alert_config_repository import AlertConfigRepository
 from .email_receiver_repository import EmailReceiverRepository
 from .environment_variable_repository import (
     EnvironmentVariable,
-    EnvironmentVariableRepository, InMemoryEnvironmentVariableDriver, AHT20EnvironmentVariableDriver, DHT20EnvironmentVariableDriver)
+    EnvironmentVariableRepository, 
+    InMemoryEnvironmentVariableDriver, 
+    AHT20EnvironmentVariableDriver, 
+    DHT20EnvironmentVariableDriver, 
+    DHT22EnvironmentVariableDriver
+)
 from .externals import AHT20
 from .gmail_notification_config_repository import (
     GmailNotificationConfig, GmailNotificationConfigRepository)
