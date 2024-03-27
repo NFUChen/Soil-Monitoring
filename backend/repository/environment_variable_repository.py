@@ -22,16 +22,19 @@ class EnvironmentVariableDriver(ABC):
 
 class DHT22EnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
-        self.pin = 23
+        self.room_temperature_pin = 23
+        self.soil_humidity_pin = 24
         self.driver = Adafruit_DHT
 
         self.sensor = self.driver.DHT22
     
     def get_environment_variable(self) -> EnvironmentVariable:
-        humidity, temperature = self.driver.read_retry(self.sensor, self.pin) # type: ignore
-        if humidity is None:
+        _, room_temperature = self.driver.read_retry(self.sensor, self.room_temperature_pin) # type: ignore
+        soil_humidity, _ = self.driver.read_retry(self.sensor, self.soil_humidity_pin) # type: ignore
+
+        if soil_humidity is None:
             humidity: float = 0
-        if temperature is None:
+        if room_temperature is None:
             temperature: float = 0
         return EnvironmentVariable(
             temperature = round(humidity, 2),
