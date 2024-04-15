@@ -11,7 +11,7 @@ from sqlmodel import Session, select
 
 from repository.models import EnvironmentVariable
 
-from .externals import AHT20, DHT20
+from .externals.Qwiic import Qwiic
 import Adafruit_DHT
 
 class EnvironmentVariableDriver(ABC):
@@ -20,17 +20,18 @@ class EnvironmentVariableDriver(ABC):
         raise NotImplementedError()
     
 
-class DHT22EnvironmentVariableDriver(EnvironmentVariableDriver):
+class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
         self.room_temperature_pin = 23
-        self.soil_humidity_pin = 24
         self.driver = Adafruit_DHT
+
+        self.qwiic_sensor = Qwiic()
 
         self.sensor = self.driver.DHT22
     
     def get_environment_variable(self) -> EnvironmentVariable:
         _, room_temperature = self.driver.read_retry(self.sensor, self.room_temperature_pin) # type: ignore
-        soil_humidity, _ = self.driver.read_retry(self.sensor, self.soil_humidity_pin) # type: ignore
+        soil_humidity = self.qwiic_sensor.get_moisture_level()
 
         if soil_humidity is None:
             humidity: float = 0
@@ -39,27 +40,6 @@ class DHT22EnvironmentVariableDriver(EnvironmentVariableDriver):
         return EnvironmentVariable(
             temperature = round(humidity, 2),
             humidity = round(temperature, 2)
-        )
-    
-class AHT20EnvironmentVariableDriver(EnvironmentVariableDriver):
-    def __init__(self) -> None:
-        self.driver = AHT20()
-    
-    def get_environment_variable(self) -> EnvironmentVariable:
-        return EnvironmentVariable(
-            temperature = round(self.driver.get_temperature(), 2),
-            humidity = round(self.driver.get_humidity(), 2)
-        )
-        
-class DHT20EnvironmentVariableDriver(EnvironmentVariableDriver):
-    def __init__(self) -> None:
-        self.driver = DHT20()
-    
-    def get_environment_variable(self) -> EnvironmentVariable:
-        temperature, humidity = self.driver.read()
-        return EnvironmentVariable(
-            temperature = round(temperature.value, 2),
-            humidity = round(humidity.value, 2)
         )
 
 class InMemoryEnvironmentVariableDriver(EnvironmentVariableDriver):

@@ -9,7 +9,7 @@ services:
     ports:
       - "5001:5000"
     environment:
-      - MODE=DHT22 # AHT20/DHT20/DHT22 or not specified, not specified will be in dev mode
+      - MODE=PROD # PROD/MEMORY or not specified, not specified will be in dev mode
     privileged: true
 
   sensor-db:

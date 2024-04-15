@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN pip3 install Adafruit_DHT==1.4.0 --install-option="--force-pi"
+
 RUN pip install -r requirements.txt
 
 COPY . .

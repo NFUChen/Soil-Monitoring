@@ -3,10 +3,8 @@ from .email_receiver_repository import EmailReceiverRepository
 from .environment_variable_repository import (
     EnvironmentVariable,
     EnvironmentVariableRepository, 
-    InMemoryEnvironmentVariableDriver, 
-    AHT20EnvironmentVariableDriver, 
-    DHT20EnvironmentVariableDriver, 
-    DHT22EnvironmentVariableDriver
+    InMemoryEnvironmentVariableDriver,
+    DHT22WithQwiicEnvironmentVariableDriver
 )
 from .externals import AHT20
 from .gmail_notification_config_repository import (
