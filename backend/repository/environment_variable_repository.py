@@ -12,7 +12,8 @@ from sqlmodel import Session, select
 from repository.models import EnvironmentVariable
 
 from .externals.Qwiic import Qwiic
-import Adafruit_DHT
+import adafruit_dht
+import board
 
 class EnvironmentVariableDriver(ABC):
     @abstractmethod
@@ -22,15 +23,17 @@ class EnvironmentVariableDriver(ABC):
 
 class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
-        self.room_temperature_pin = 23
-        self.driver = Adafruit_DHT
+        self.driver = adafruit_dht.DHT22(board.D4)
 
         self.qwiic_sensor = Qwiic()
-
-        self.sensor = self.driver.DHT22
     
     def get_environment_variable(self) -> EnvironmentVariable:
-        _, room_temperature = self.driver.read_retry(self.sensor, self.room_temperature_pin) # type: ignore
+        room_temperature = None
+        try:
+            room_temperature = self.driver.temperature # type: ignore
+        except RuntimeError as error:
+            # Errors happen fairly often, DHT's are hard to read, just keep going
+            logger.critical(error.args[0])
         soil_humidity = self.qwiic_sensor.get_moisture_level()
 
         if soil_humidity is None:

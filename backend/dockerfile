@@ -2,9 +2,10 @@ FROM python:3.9.2
 
 WORKDIR /app
 
+RUN apt update && apt install libgpiod2
+
 COPY requirements.txt .
 
-RUN pip3 install Adafruit_DHT==1.4.0 --install-option="--force-pi"
 
 RUN pip install -r requirements.txt
 
