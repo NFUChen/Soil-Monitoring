@@ -1,3 +1,10 @@
 以下連結為draw.io的接線圖
 
 https://drive.google.com/file/d/1faMNojoUvaDng783gLBTfim3UFUszaqp/view?usp=sharing
+
+
+Adafruit_CircuitPython_DHT Github連結
+https://github.com/adafruit/Adafruit_CircuitPython_DHT
+
+Library相關使用說明
+https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup
