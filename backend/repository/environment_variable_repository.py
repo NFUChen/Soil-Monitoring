@@ -37,12 +37,12 @@ class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
         soil_humidity = self.qwiic_sensor.get_moisture_level()
 
         if soil_humidity is None:
-            humidity: float = 0
+            soil_humidity: float = 0
         if room_temperature is None:
-            temperature: float = 0
+            room_temperature: float = 0
         return EnvironmentVariable(
-            temperature = round(humidity, 2),
-            humidity = round(temperature, 2)
+            temperature = round(room_temperature, 2),
+            humidity = round(soil_humidity, 2)
         )
 
 class InMemoryEnvironmentVariableDriver(EnvironmentVariableDriver):

@@ -67,5 +67,4 @@ central_notification_service = CentralNotificationService(
 
 
 
-if __name__ == "__main__":
-    server.run()
+server.run()

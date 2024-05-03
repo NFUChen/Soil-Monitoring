@@ -1,15 +1,13 @@
 
 import time
 import qwiic_soil_moisture_sensor
-
+from threading import Thread
 
 
 class Qwiic:
     def __init__(self) -> None:
         self.qwiic_soil_moisture_sensor = qwiic_soil_moisture_sensor.QwiicSoilMoistureSensor()
-
-
-        self._init_sensor()
+        Thread(target = self._init_sensor).start()
        
     def _init_sensor(self) -> None:
         if self.qwiic_soil_moisture_sensor.connected == False:
