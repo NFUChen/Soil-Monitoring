@@ -23,7 +23,7 @@ class EnvironmentVariableDriver(ABC):
 
 class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
-        self.driver = adafruit_dht.DHT22(board.D4)
+        self.driver = adafruit_dht.DHT11(board.D4)
 
         self.qwiic_sensor = Qwiic()
     
