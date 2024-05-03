@@ -1,5 +1,6 @@
 
 import time
+from loguru import logger
 import qwiic_soil_moisture_sensor
 from threading import Thread
 
@@ -17,6 +18,7 @@ class Qwiic:
 
         while True:
             time.sleep(1)
+            logger.critical(f"[UPDATE MOISTURE LEVEL] Update moisture level, {self.qwiic_soil_moisture_sensor.level}")
             self.qwiic_soil_moisture_sensor.read_moisture_level()
     
 

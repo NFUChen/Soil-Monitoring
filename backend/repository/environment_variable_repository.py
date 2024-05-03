@@ -3,7 +3,7 @@ import random
 import time
 from abc import ABC, abstractmethod
 from threading import Thread
-from typing import Iterable
+from typing import Iterable, Optional
 
 from loguru import logger
 from sqlalchemy import Engine
@@ -28,7 +28,7 @@ class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
         self.qwiic_sensor = Qwiic()
     
     def get_environment_variable(self) -> EnvironmentVariable:
-        room_temperature = None
+        room_temperature: Optional[float] = None
         try:
             room_temperature = self.driver.temperature # type: ignore
         except RuntimeError as error:
@@ -39,7 +39,7 @@ class DHT22WithQwiicEnvironmentVariableDriver(EnvironmentVariableDriver):
         if soil_humidity is None:
             soil_humidity: float = 0
         if room_temperature is None:
-            room_temperature: float = 0
+            room_temperature = 0
         return EnvironmentVariable(
             temperature = round(room_temperature, 2),
             humidity = round(soil_humidity, 2)
