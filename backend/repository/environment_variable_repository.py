@@ -13,8 +13,6 @@ from repository.externals.ADS1115.ADS1115_soil_moisture_sensor import (
 )
 from repository.models import EnvironmentVariable
 
-import adafruit_dht
-import board
 
 
 class EnvironmentVariableDriver(ABC):
@@ -25,18 +23,10 @@ class EnvironmentVariableDriver(ABC):
 
 class DHT11WithADS1115EnvironmentVariableDriver(EnvironmentVariableDriver):
     def __init__(self) -> None:
-        self.driver = adafruit_dht.DHT11(board.D4)
-
         self.ads1115 = ADS1115SoilMoistureSensor()
 
     def get_environment_variable(self) -> EnvironmentVariable:
-        room_temperature: Optional[float] = None
-        try:
-            room_temperature = self.driver.temperature # type: ignore
-        except RuntimeError as error:
-            # Errors happen fairly often, DHT's are hard to read, just keep going
-            logger.critical(error.args[0])
-        
+        room_temperature: int =  random.randint(0, 50)        
         soil_humidity = self.ads1115.get_moisture_level()
 
         if soil_humidity is None:
