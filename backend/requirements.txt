@@ -47,8 +47,6 @@ RPi.GPIO==0.7.1
 simple-websocket==1.0.0
 six==1.16.0
 smbus2==0.4.3
-sparkfun-qwiic-i2c==1.0.0
-sparkfun-qwiic-soil-moisture-sensor==0.0.2
 SQLAlchemy==2.0.25
 sqlmodel==0.0.14
 sysv-ipc==1.1.0
@@ -58,3 +56,5 @@ Werkzeug==2.2.2
 wrapt==1.16.0
 wsproto==1.2.0
 yarl==1.9.4
+
+adafruit-circuitpython-ads1x15==2.2.25

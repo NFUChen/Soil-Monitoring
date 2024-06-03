@@ -9,7 +9,7 @@ from repository import (AlertConfigRepository, EmailReceiverRepository,
                         EnvironmentVariableRepository,
                         GmailNotificationConfigRepository,
                         WaterReplenishmentConfigRepository, init_database,
-                        DHT22WithQwiicEnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
+                        DHT11WithADS1115EnvironmentVariableDriver, InMemoryEnvironmentVariableDriver)
 from repository.environment_variable_repository import EnvironmentVariableDriver
 from service import (CentralNotificationService, GmailNotificationService,
                      MonitorService, OutputPin, WaterReplenishmentService,
@@ -25,7 +25,7 @@ sql_engine = init_database()
 
 driver_lookup: dict[str, Type[EnvironmentVariableDriver]] = {
     "MEMORY": InMemoryEnvironmentVariableDriver,
-    "PROD": DHT22WithQwiicEnvironmentVariableDriver
+    "PROD": DHT11WithADS1115EnvironmentVariableDriver
 }
 
 driver_key = os.environ.get("MODE", "MEMORY")
