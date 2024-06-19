@@ -32,11 +32,11 @@ class DHT11WithADS1115EnvironmentVariableDriver(EnvironmentVariableDriver):
     def get_environment_variable(self) -> EnvironmentVariable:
         room_temperature: Optional[float] = None
         try:
-            room_temperature = self.driver.temperature # type: ignore
+            room_temperature = self.driver.temperature  # type: ignore
         except RuntimeError as error:
             # Errors happen fairly often, DHT's are hard to read, just keep going
             logger.critical(error.args[0])
-        
+
         soil_humidity = self.ads1115.get_moisture_level()
 
         if soil_humidity is None:
@@ -44,7 +44,7 @@ class DHT11WithADS1115EnvironmentVariableDriver(EnvironmentVariableDriver):
         if room_temperature is None:
             room_temperature = 0
         return EnvironmentVariable(
-            temperature=round(soil_humidity, 2), humidity=round(room_temperature, 2)
+            temperature=round(room_temperature, 2), humidity=round(soil_humidity, 2)
         )
 
 
