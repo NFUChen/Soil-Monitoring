@@ -8,3 +8,11 @@ https://github.com/adafruit/Adafruit_CircuitPython_DHT
 
 Library相關使用說明
 https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup
+
+
+ADS1115基本上對接Pi上面對應的Pin (SDA, SCL, GND, DCC-> 5v)
+濕度感測器有3 Pin (
+  VCC -> [pi] 5v, 
+  GND -> [pi] GND, 
+  **AOUT -> [ADS1115] A0**
+)
