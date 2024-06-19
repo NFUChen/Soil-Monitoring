@@ -14,7 +14,6 @@ from repository.externals.ADS1115.ADS1115_soil_moisture_sensor import (
 from repository.models import EnvironmentVariable
 
 
-
 class EnvironmentVariableDriver(ABC):
     @abstractmethod
     def get_environment_variable(self) -> EnvironmentVariable:
@@ -26,15 +25,14 @@ class DHT11WithADS1115EnvironmentVariableDriver(EnvironmentVariableDriver):
         self.ads1115 = ADS1115SoilMoistureSensor()
 
     def get_environment_variable(self) -> EnvironmentVariable:
-        room_temperature: int =  random.randint(0, 50)        
+        room_temperature: int = random.randint(0, 50)
         soil_humidity = self.ads1115.get_moisture_level()
-
         if soil_humidity is None:
             soil_humidity = 0
         if room_temperature is None:
             room_temperature = 0
         return EnvironmentVariable(
-            temperature=round(soil_humidity, 2), humidity=round(room_temperature, 2)
+            temperature=round(room_temperature, 2), humidity=round(soil_humidity, 2)
         )
 
 
