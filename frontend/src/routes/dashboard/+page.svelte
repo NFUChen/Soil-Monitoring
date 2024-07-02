@@ -56,7 +56,7 @@
 	const getDailyEnvVariablesQuery = createQuery({
 		queryKey: ["dailyEnvVariables"],
 		queryFn: GetDailyEnvVariablesService,
-		refetchInterval: 1000 * 60,
+		refetchInterval: 1000 * 10,
 	});
 
 	const getAlertConfigMutation = createMutation({
